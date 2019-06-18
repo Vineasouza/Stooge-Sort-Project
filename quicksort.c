@@ -16,7 +16,7 @@ int partition (int* A, int low, int high) {
     /*index do menor elemento*/
     int i = (low - 1);
 
-    for(int j = 0; j <= high - 1; j++) {
+    for(int j = low; j <= high - 1; j++) {
 
         /*se o elemento atual e menor ou igual ao pivot*/
         if(A[j] <= pivot) {
