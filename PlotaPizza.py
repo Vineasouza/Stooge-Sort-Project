@@ -1,7 +1,7 @@
 import csv
 import matplotlib.pyplot as pt
 
-labels = "Burble", "QuickSort", "Seleção","Inserção","Shellsort","Merge sort","Stooge Sort"
+labels = ["ShellSort", "InsertionSort", "BubleSort","SelectionSort","StoogeSort","Merge sort","quickSort"]
 
 recebe = open("Exemplo.csv")
 dados = csv.reader(recebe,delimiter=';') #DELIMITER É COMO OS CAMPOS ESTÃO DIVIDIDOS (PODENDO SER , E ;)
