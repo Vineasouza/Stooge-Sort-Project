@@ -2,6 +2,7 @@ from tkinter import*
 import csv
 import matplotlib.pyplot as pt
 from PIL import Image, ImageTk
+import random 
 
 class Aplicacao:
     
@@ -38,7 +39,7 @@ class Aplicacao:
         self.Algortimos = Label(self.FramaInforma, text = "Algoritmos selecionado:", fg = "Black")
         self.Algortimos.place(x =10, y =55)
         
-        self.InformaAlg = Label(self.FramaInforma,  fg = "Black")
+        self.InformaAlg = Label(self.FramaInforma,  fg = "Black", text ="...")
         self.InformaAlg.place(x=150,y=55)
 
         self.Frame3 = Frame(janela, height = 300, width = 600, background ="#1e8bc3");
@@ -49,12 +50,25 @@ class Aplicacao:
 
         self.LabelConclu = Label(self.Frame4,text= "Conclusões: ", fg ="Black")
         self.LabelConclu.place(x = 10, y = 10)
+       
+        self.LabelConcluAlgoritmosPlotados = Label(self.Frame4, text = ".....", fg = "Black")
+        self.LabelConcluAlgoritmosPlotados.place(x=80, y=10)
 
+        self.LabelPiorAlgoritmo = Label(self.Frame4, text = ".......", fg = "Black")
+        self.LabelPiorAlgoritmo.place(x=80, y=33)
+
+        #------------------------- Entrada do vetor --------------------------------
         self.Entrada = Entry(self.Frame2);
         self.Entrada.place(x=100, y =10);
 
         self.Ent = Label(self.Frame2, text = "Insira o vetor", background = "red", fg = "white");
         self.Ent.place(x=10,y=10);
+
+        self.ok = Button(self.Frame2, text = "OK", background = "blue", fg = "white")
+        self.ok.place(x = 240, y = 10)
+        self.ok.bind("<Button-1>", self.escreveVetor)
+
+        #-------------------------------------------------------------------------------
 
         self.botaoC1 = Button(self.Frame2, text="Nº de comparações", background ="blue", fg = "white");
         self.botaoC1.place(x = 10, y =40);
@@ -114,6 +128,26 @@ class Aplicacao:
         self.janela.mainloop()
 
     ##--------------------- Funções ----------------------------------
+
+    def escreveVetor(self,x):
+        tamanho  = []
+        number = int (self.Entrada.get())
+        tamanho.append(number)
+
+        vetor = []
+        i = 0
+        while(i<number):
+            vetor.append(random.randint(1,number))
+            i = i + 1
+        
+        vetOpen = open("vetor.csv",mode ='w')
+        vetWrite = csv.writer(vetOpen,delimiter = ',')
+
+        
+        vetWrite.writerow(vetor)
+        
+
+
     def plota_grafico(self, event):
         labels = []
 
@@ -129,7 +163,7 @@ class Aplicacao:
         for i in dados:
             for n in i:
                 dadosRecebidos.append(int(n)) ###PROBLEMA A SER SOLUCIONADO
-        print(dadosRecebidos)
+        #print(dadosRecebidos)
         
         contador = 0
         
@@ -137,7 +171,7 @@ class Aplicacao:
             self.__dados[k][0] = dadosRecebidos[contador]
             contador += 1
         
-        print(labels)
+        #print(labels)
         dadosPlotados = []
 
         for j in self.__dados:
@@ -146,8 +180,8 @@ class Aplicacao:
             
                 
        
-        print(self.__dados)
-        print(dadosPlotados)
+        #print(self.__dados)
+        #print(dadosPlotados)
         pt.figure(figsize=(8,4))
         pt.bar(labels,dadosPlotados, color = "green",width=0.6, align="center")
         pt.xticks(labels)
@@ -156,7 +190,8 @@ class Aplicacao:
         pt.grid(True)
         pt.savefig("barra.jpg")
         self.criaLabel()
-
+        self.mostraPiorAlgoritmo()
+        self.reiniciaAlgoritmosSelecionado()
        
     def criaLabel(self):
         image = Image.open("barra.jpg")
@@ -212,22 +247,40 @@ class Aplicacao:
     #----------------------------------------------------------------------------------------------------
     
     def alteraAlgoritmosSelecionado(self):
-        c = True
+        
+        
         for chave in self.__dados:
             
             if self.__dados[chave][1] == True:
                 
+                #---- VERIFICANDO SE NÃO REPETE ---
                 for k in self.__StringAlg:
-                    if(k == chave):
-                        c = False
-                        break
 
-                if c == True:
-                    self.__StringAlg.append(chave)
+                    if(k == chave):
+                        self.__StringAlg.remove(k)
+                #--------------------------------    
+                self.__StringAlg.append(chave)
+
+
+           
 
         self.InformaAlg["text"] = self.__StringAlg
 
+       
 
+    def reiniciaAlgoritmosSelecionado(self): 
+
+
+        for chave in self.__dados:
+            self.__dados[chave][1] = False
+
+        self.LabelConcluAlgoritmosPlotados["text"] = self.__StringAlg
+        self.InformaAlg["text"] = "...."
+        
+        self.__StringAlg = []
+        
+
+    
     def labelCompInforma(self):
 
         if self.CompOuTroca == 0:
@@ -239,8 +292,16 @@ class Aplicacao:
         else:
             pass
 
-        
-        
+    def mostraPiorAlgoritmo(self):
+        pior = [0,""]
+
+        for k in self.__dados:
+            if self.__dados[k][1] == True:
+                if self.__dados[k][0] > pior[0]:
+                    pior[1] = k
+                    pior[0] = self.__dados[k][0]
+                    
+        self.LabelPiorAlgoritmo["text"] = pior[1] + " >> Pior Algoritmo"
 
 janela = Tk()   
 janela.geometry("800x590+300+80")

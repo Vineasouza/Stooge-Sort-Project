@@ -7,60 +7,149 @@ int main(int argc, char const *argv[]) {
     int vetor[] = {10,3,5,9,7};
     int n = 5;
     int dados;
-    int op;
+    
     FILE *arquivo_dados;
-
+    FILE *arquivoVetor;
     //ARQUIVO QUE RECEBE OS DtesADOS 
-    arquivo_dados =fopen("Exemplo.csv","a");
+    arquivo_dados =fopen("dadosComparacao.csv","w");
+    arquivoVetor = fopen("vetor.csv", "r");
+    
+    //>>>>> LENDO ARQUIVO ONDE ESTÁ O VETOR
+ 
+    int *vet;
+    int quantidade = 0;
+    int inteiro = 0;
+    
+    while (!feof(arquivoVetor))
+    {
+
+        fscanf(arquivoVetor,"%d,",&inteiro);
+        quantidade++;
+        
+        if(quantidade == 1){
+            vet = (int*) malloc(sizeof(int)*quantidade);
+        }else{
+            vet = (int*)realloc(vet,sizeof(int)*quantidade);
+        }
+
+        vet[quantidade - 1] = inteiro;
 
     
+    }
+
+    fclose(arquivoVetor);
+    //-----------------------------------------------
+
+    //TESTE PARA VER SE O VETOR DEU CERTO
+    printf("tamanho vetor >> %d \n", quantidade);
+    for(int i = 0; i<quantidade; i++){
+        printf("|%d| ", vet[i]);
+    }
     
-    /* 
-    dados = selectionSort(vetor,n);
+   
+    //TESTANDO EM RALAÇÃO AO NÚMERO DE COMPARAÇÕES
+    int numeroCom = 0;
+    int *ponteiroNumComp;
+    ponteiroNumComp = &numeroCom;
+    int numTroca = 0;
+    int *ponteiroNumTroca;
+    ponteiroNumTroca = &numTroca;
+
+    // SE COND = 0 retorna número de comparações, SE COND = 1 retorna número de trocas
+    
+    dados = selectionSort(vet,quantidade - 1,0);
     printf("%d, ", dados);
 
-    dados = shellSort(vetor,n);
+    dados = shellSort(vet,quantidade - 1,0);
     printf("%d, ", dados);
 
-    dados = insertionSort(vetor,n);
+    dados = insertionSort(vet,quantidade - 1,0);
     printf("%d, ", dados);
 
-    dados = bubbleSort(vetor,n);
+    dados = bubbleSort(vet,quantidade - 1,0);
     printf("%d, ", dados);
 
-    dados = quickSort(vetor,0,5,0);
+    dados = quickSort(vet,0,quantidade - 1, ponteiroNumComp, ponteiroNumTroca,0);
     printf("%d, ", dados);
+    numeroCom = 0;
+    numTroca = 0;
 
-    dados = mergeSort(vetor,0,5,0);
+    dados = mergeSort(vet,0,quantidade - 1,ponteiroNumComp, ponteiroNumTroca, 0);
     printf("%d, ", dados);
+    numeroCom = 0;
+    numTroca = 0;
 
-    dados = stoogeSort(vetor,0,5,0);
+    dados = stoogeSort(vet,0,quantidade - 1,ponteiroNumComp,ponteiroNumTroca,0);
     printf("%d.", dados);
-    */
-
-    dados = insertionSort(vetor,n);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = selectionSort(vetor,n);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = mergeSort(vetor,0,5,0);
-    fprintf(arquivo_dados,"%d;",dados);
+    numeroCom = 0;
+    numTroca = 0;
     
-    dados = bubbleSort(vetor,n);
+    //TESTANDO EM RELAÇÃO AO NÚMERO DE TROCAS
+    
+    
+    dados = selectionSort(vet,quantidade - 1,1);
+    printf("\n %d, ", dados);
+
+    dados = shellSort(vet,quantidade - 1,1);
+    printf("%d, ", dados);
+
+    dados = insertionSort(vet,quantidade - 1,1);
+    printf("%d, ", dados);
+
+    dados = bubbleSort(vet,quantidade - 1,1);
+    printf("%d, ", dados);
+
+    dados = quickSort(vet,0,quantidade - 1, ponteiroNumComp, ponteiroNumTroca,1);
+    printf("%d, ", dados);
+    numeroCom = 0;
+    numTroca = 0;
+
+    dados = mergeSort(vet,0,quantidade - 1,ponteiroNumComp, ponteiroNumTroca, 1);
+    printf("%d, ", dados);
+    numeroCom = 0;
+    numTroca = 0;
+
+    dados = stoogeSort(vet,0,quantidade - 1,ponteiroNumComp,ponteiroNumTroca,1);
+    printf("%d.", dados);
+    numeroCom = 0;
+    numTroca = 0;
+
+
+    //GRAVANDO DADOS
+
+    dados = insertionSort(vet,(quantidade - 1),0);
     fprintf(arquivo_dados,"%d;",dados);
 
-    dados = shellSort(vetor,n);
+    dados = selectionSort(vet,(quantidade - 1),0);
     fprintf(arquivo_dados,"%d;",dados);
 
-    dados = quickSort(vetor,0,5,0);
+    dados = mergeSort(vet,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
+    fprintf(arquivo_dados,"%d;",dados);
+    numeroCom = 0;
+    numTroca = 0;
+
+    dados = bubbleSort(vet,(quantidade - 1),0);
     fprintf(arquivo_dados,"%d;",dados);
 
-    dados = stoogeSort(vetor,0,5,0);
+    dados = shellSort(vetor,(quantidade - 1),0);
+    fprintf(arquivo_dados,"%d;",dados);
+
+    dados = quickSort(vetor,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
+    fprintf(arquivo_dados,"%d;",dados);
+    numeroCom = 0;
+    numTroca = 0;
+
+    dados = stoogeSort(vetor,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
     fprintf(arquivo_dados,"%d",dados);
-    
-    fclose(arquivo_dados);
+    numeroCom = 0;
+    numTroca = 0;
 
+    fputs("Ta gravando", arquivo_dados);
+
+    fclose(arquivo_dados);
+    
+    //Desalocando memória
+    free(vet);
 
     return 0;
 }
