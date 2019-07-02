@@ -10,16 +10,29 @@ int main(int argc, char const *argv[]) {
     
     FILE *arquivo_dados;
     FILE *arquivoVetor;
-    //ARQUIVO QUE RECEBE OS DtesADOS 
-    arquivo_dados =fopen("dadosComparacao.csv","w");
-    arquivoVetor = fopen("vetor.csv", "r");
+    FILE *arquivo_trocas;
+
+    int numeroComparacao = 0;
+    int *pontNumComp;
+    pontNumComp = &numeroComparacao;
+
+    int numeroDeTrocas = 0;
+    int *pontNumTroca;
+    pontNumTroca = &numeroDeTrocas;
+
+    //ARQUIVO QUE RECEBE OS DADOS 
+    arquivo_dados = fopen("dadosComparacao.csv","w");
+    arquivo_trocas = fopen("dadosTrocas.csv", "w");
     
-    //>>>>> LENDO ARQUIVO ONDE ESTÁ O VETOR
+    //>>>>>         TESTANDO INSERTION        <<<<<<
+    //>>>>> ---- LENDO ARQUIVO ONDE ESTÁ O VETOR -------
  
     int *vet;
     int quantidade = 0;
     int inteiro = 0;
     
+    arquivoVetor = fopen("vetor.csv", "r");
+
     while (!feof(arquivoVetor))
     {
 
@@ -36,115 +49,253 @@ int main(int argc, char const *argv[]) {
 
     
     }
-
+    
     fclose(arquivoVetor);
-    //-----------------------------------------------
 
-    //TESTE PARA VER SE O VETOR DEU CERTO
-    printf("tamanho vetor >> %d \n", quantidade);
+    //TESTANDO INSERTION E JOGANDO DADOS NO ARQUIVO
+    insertionSort(vet,quantidade - 1,pontNumComp,pontNumTroca);
+    //printf("Número de trocas >> %d \n", numeroDeTrocas);
+    //printf("Número de comparacao >> %d \n",numeroComparacao);
+    
+    //for(int j = 0; j< quantidade; j++){
+        //printf("|%d|, ",vet[j]);
+    //}
+    
+    fprintf(arquivo_dados,"%d;",numeroComparacao);
+    fprintf(arquivo_trocas,"%d;",numeroDeTrocas);
+    //TA ORDENANDO DE ACORDO COM OS TESTES
+
+    //----------------------------------------------------------------------------
+
+    //-----------> TESTANDO SELECTION <----------
+
+    //PEGANDO VETOR DESORDENADO NOVAMENTE
+    arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+ 
+    }
+    
+    fclose(arquivoVetor);
+
+    //TESTANDO PARA VER SE PEGOU O VETOR DESORDENADO
+    //for(int i = 0; i< quantidade; i++){
+        //printf("|%d|, ",vet[i]);
+    //}
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
+    selectionSort(vet,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d;", numeroComparacao);
+    fprintf(arquivo_trocas,"%d;", numeroDeTrocas);
+
+    printf("Números de comparações >>> %d \n", numeroComparacao);
+    printf("Números de trocas >> %d \n", numeroDeTrocas);
+
+    //TESTANDO PARA VER SE ORDENOU
+    for(int i = 0; i< quantidade; i++){
+        printf("|%d|, ",vet[i]);
+    }
+
+    //ERRO NÃO ESTÁ ORDENANDO
+
+
+//------------------------------------------------------------
+
+
+//---------->>>     TESTANDO BUBLE SORT <<<< -----------------------------
+
+    arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+
+    }
+    
+    fclose(arquivoVetor);
+
+    /*  TESTE PARA VER SE PEGOU VETOR DESORDENADO 
     for(int i = 0; i<quantidade; i++){
         printf("|%d| ", vet[i]);
     }
+    */
     
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
+
+    bubbleSort(vet,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d;",numeroComparacao);
+    fprintf(arquivo_trocas,"%d;",numeroDeTrocas);
+    
+    //TESTE PARA VER SE O VETOR ORDENOU 
+    /* for(int i = 0; i<quantidade; i++){
+        printf("|%d| ", vet[i]);
+    */
+
+    
+
+//--------------------------------------------------------------
    
-    //TESTANDO EM RALAÇÃO AO NÚMERO DE COMPARAÇÕES
-    int numeroCom = 0;
-    int *ponteiroNumComp;
-    ponteiroNumComp = &numeroCom;
-    int numTroca = 0;
-    int *ponteiroNumTroca;
-    ponteiroNumTroca = &numTroca;
+//----------------->>> TESTANDO SHELLSORT <<---------------------
 
-    // SE COND = 0 retorna número de comparações, SE COND = 1 retorna número de trocas
+//PEGANDO VETOR DESORDENADO
+ arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+
+    }
     
-    dados = selectionSort(vet,quantidade - 1,0);
-    printf("%d, ", dados);
+    fclose(arquivoVetor);
 
-    dados = shellSort(vet,quantidade - 1,0);
-    printf("%d, ", dados);
+    /* for(int i = 0; i<quantidade; i++){
+        printf("|%d|", vet[i]);
+    }
 
-    dados = insertionSort(vet,quantidade - 1,0);
-    printf("%d, ", dados);
+    */
 
-    dados = bubbleSort(vet,quantidade - 1,0);
-    printf("%d, ", dados);
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
 
-    dados = quickSort(vet,0,quantidade - 1, ponteiroNumComp, ponteiroNumTroca,0);
-    printf("%d, ", dados);
-    numeroCom = 0;
-    numTroca = 0;
-
-    dados = mergeSort(vet,0,quantidade - 1,ponteiroNumComp, ponteiroNumTroca, 0);
-    printf("%d, ", dados);
-    numeroCom = 0;
-    numTroca = 0;
-
-    dados = stoogeSort(vet,0,quantidade - 1,ponteiroNumComp,ponteiroNumTroca,0);
-    printf("%d.", dados);
-    numeroCom = 0;
-    numTroca = 0;
+    shellSort(vet,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d;",numeroComparacao);
+    fprintf(arquivo_trocas,"%d;",numeroDeTrocas);
     
-    //TESTANDO EM RELAÇÃO AO NÚMERO DE TROCAS
+    //printf("Número de comparaçao >> %d \n", numeroComparacao);
+    //printf("Número de trocas>> %d \n", numeroDeTrocas);
+
+    //for(int i = 0; i<quantidade; i++){
+        //printf("|%d|", vet[i]);
+    //}
     
+
+    //SHELL ESTÁ RODANDO
+
+//----------------------------------------------------------------
+
+//-------- >>> TESTANDO QUICKSORT <<< -----------------------------------
+
+arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+
+    }
     
-    dados = selectionSort(vet,quantidade - 1,1);
-    printf("\n %d, ", dados);
+    fclose(arquivoVetor);
 
-    dados = shellSort(vet,quantidade - 1,1);
-    printf("%d, ", dados);
+    /* TESTE PARA VER SE É VETOR DESORDENADO
+    for(int i = 0; i<quantidade; i++){
+        printf("|%d|", vet[i]);
+    }
+    */
+   
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
+    quickSort(vet,0,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d;", *pontNumComp);
+    fprintf(arquivo_trocas,"%d;", numeroDeTrocas);
 
-    dados = insertionSort(vet,quantidade - 1,1);
-    printf("%d, ", dados);
+    /* TESTE PARA VER SE ORDENOU
 
-    dados = bubbleSort(vet,quantidade - 1,1);
-    printf("%d, ", dados);
+    for(int i = 0; i<quantidade; i++){
+        printf("|%d|", vet[i]);
+    }
 
-    dados = quickSort(vet,0,quantidade - 1, ponteiroNumComp, ponteiroNumTroca,1);
-    printf("%d, ", dados);
-    numeroCom = 0;
-    numTroca = 0;
+    */
+  
 
-    dados = mergeSort(vet,0,quantidade - 1,ponteiroNumComp, ponteiroNumTroca, 1);
-    printf("%d, ", dados);
-    numeroCom = 0;
-    numTroca = 0;
+//------------------------------------------------------------------
 
-    dados = stoogeSort(vet,0,quantidade - 1,ponteiroNumComp,ponteiroNumTroca,1);
-    printf("%d.", dados);
-    numeroCom = 0;
-    numTroca = 0;
+//----------------->>>> TESTANDO MERGERSORT <<<-----------------------
+
+arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+
+    }
+    
+    fclose(arquivoVetor);
+
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
+    mergeSort(vet,0,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d;",numeroComparacao);
+    fprintf(arquivo_trocas,"%d;",numeroDeTrocas);
+    /*
+    for(int i = 0; i<quantidade; i++){
+        printf("|%d| ", vet[i]);
+    }
+
+    */
+
+//------------------------------------------------------------------------
+
+//----------------->>> STOOGE SORT <<<-----------------------------------
+
+arquivoVetor = fopen("vetor.csv", "r");
+
+    inteiro = 0;
+    quantidade = 0;
+
+    while (!feof(arquivoVetor))
+    {
+        
+        fscanf(arquivoVetor,"%d,", &inteiro);
+        quantidade++;
+        vet[quantidade - 1] = inteiro;
+
+    }
+    
+    fclose(arquivoVetor);
+
+    numeroComparacao = 0;
+    numeroDeTrocas = 0;
+
+    stoogeSort(vet,0,quantidade - 1,pontNumComp,pontNumTroca);
+    fprintf(arquivo_dados,"%d", numeroComparacao);
+    fprintf(arquivo_trocas,"%d",numeroDeTrocas);
+   
 
 
-    //GRAVANDO DADOS
-
-    dados = insertionSort(vet,(quantidade - 1),0);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = selectionSort(vet,(quantidade - 1),0);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = mergeSort(vet,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
-    fprintf(arquivo_dados,"%d;",dados);
-    numeroCom = 0;
-    numTroca = 0;
-
-    dados = bubbleSort(vet,(quantidade - 1),0);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = shellSort(vetor,(quantidade - 1),0);
-    fprintf(arquivo_dados,"%d;",dados);
-
-    dados = quickSort(vetor,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
-    fprintf(arquivo_dados,"%d;",dados);
-    numeroCom = 0;
-    numTroca = 0;
-
-    dados = stoogeSort(vetor,0,(quantidade - 1),ponteiroNumComp,ponteiroNumTroca,0);
-    fprintf(arquivo_dados,"%d",dados);
-    numeroCom = 0;
-    numTroca = 0;
-
-    fputs("Ta gravando", arquivo_dados);
+    //stooge ta rodando
+//----------------------------------------------------------------------
 
     fclose(arquivo_dados);
     

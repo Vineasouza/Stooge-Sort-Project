@@ -3,15 +3,17 @@ import csv
 import matplotlib.pyplot as pt
 from PIL import Image, ImageTk
 import random 
-
+import os
+import subprocess
 class Aplicacao:
     
     __janela = None
-    __CompOuTroca = -1
+    
+    __grafico = {"comparação": False, "trocas": False}
     
 
-    __dados = {"InsertionSort": [0,False] ,"SeletionSort": [0,False],"MergeSort": [0,False],
-    "BubleSort":[0,False],"ShellSort": [0,False],"QuickSort": [0,False], "StoogeSort": [0,False]
+    __dados = {"InsertionSort": [0,False] , "SeletionSort": [0,False], "BubleSort": [0,False],
+    "ShellSort": [0,False], "QuickSort": [0,False], "MergeSort": [0,False], "StoogeSort": [0,False]
     }
 
     __StringAlg = []
@@ -27,19 +29,22 @@ class Aplicacao:
         self.FramaInforma = Frame(self.Frame2, height = 90 , width = 600, background = "#1e8bc3")
         self.FramaInforma.place(x = 275,  y= 5)
         
-        self.LabelVetor = Label(self.FramaInforma,text = "Vetor:", fg = "Black" )
+        self.LabelVetor = Label(self.FramaInforma,text = "Tamanho do vetor :", fg = "White", bg = "#1e8bc3" )
         self.LabelVetor.place(x =10, y = 10)
         
-        self.LabelComp = Label(self.FramaInforma,text = "Comparação:", fg = "Black")
+        self.TamanhoVetor = Label(self.FramaInforma, text = "...", fg = "White", bg = "#1e8bc3")
+        self.TamanhoVetor.place(x= 140, y = 10)
+
+        self.LabelComp = Label(self.FramaInforma,text = "Comparação:", fg = "White", bg = "#1e8bc3")
         self.LabelComp.place(x=10, y= 30)
 
-        self.LabelCompInfor = Label(self.FramaInforma, text =".....", fg = "Black")
+        self.LabelCompInfor = Label(self.FramaInforma, text =".....", fg = "White", bg =  "#1e8bc3")
         self.LabelCompInfor.place(x=90, y=30)
 
-        self.Algortimos = Label(self.FramaInforma, text = "Algoritmos selecionado:", fg = "Black")
+        self.Algortimos = Label(self.FramaInforma, text = "Algoritmos selecionado:", fg = "White", bg = "#1e8bc3")
         self.Algortimos.place(x =10, y =55)
         
-        self.InformaAlg = Label(self.FramaInforma,  fg = "Black", text ="...")
+        self.InformaAlg = Label(self.FramaInforma,  fg = "White", text ="...", bg = "#1e8bc3")
         self.InformaAlg.place(x=150,y=55)
 
         self.Frame3 = Frame(janela, height = 300, width = 600, background ="#1e8bc3");
@@ -48,24 +53,27 @@ class Aplicacao:
         self.Frame4 = Frame(janela, height = 150,width = 600, background = "#1e8bc3")
         self.Frame4.place(x =110, y = 430)
 
-        self.LabelConclu = Label(self.Frame4,text= "Conclusões: ", fg ="Black")
+        self.LabelConclu = Label(self.Frame4,text= "Conclusões: ", fg ="White", bg = "#1e8bc3")
         self.LabelConclu.place(x = 10, y = 10)
        
-        self.LabelConcluAlgoritmosPlotados = Label(self.Frame4, text = ".....", fg = "Black")
+        self.LabelConcluAlgoritmosPlotados = Label(self.Frame4, text = ".....", fg = "White", bg = "#1e8bc3")
         self.LabelConcluAlgoritmosPlotados.place(x=80, y=10)
 
-        self.LabelPiorAlgoritmo = Label(self.Frame4, text = ".......", fg = "Black")
+        self.LabelPiorAlgoritmo = Label(self.Frame4, text = ".......", fg = "White", bg ="#1e8bc3")
         self.LabelPiorAlgoritmo.place(x=80, y=33)
+
+        self.MelhorAlgoritmo = Label(self.Frame4, text = "....", fg = "White", bg = "#1e8bc3")
+        self.MelhorAlgoritmo.place(x=80, y=55)
 
         #------------------------- Entrada do vetor --------------------------------
         self.Entrada = Entry(self.Frame2);
-        self.Entrada.place(x=100, y =10);
+        self.Entrada.place(x=115, y =10);
 
-        self.Ent = Label(self.Frame2, text = "Insira o vetor", background = "red", fg = "white");
-        self.Ent.place(x=10,y=10);
+        self.Ent = Label(self.Frame2, text = "Tamanho do vetor", background = "red", fg = "white");
+        self.Ent.place(x=10,y=8);
 
         self.ok = Button(self.Frame2, text = "OK", background = "blue", fg = "white")
-        self.ok.place(x = 240, y = 10)
+        self.ok.place(x = 245, y = 10)
         self.ok.bind("<Button-1>", self.escreveVetor)
 
         #-------------------------------------------------------------------------------
@@ -123,7 +131,7 @@ class Aplicacao:
         self.botao8 = Button(self.Frame1, text = "Todos", background = "blue", fg = "white")
         self.botao8.place(y=170)
         self.botao8.pack( pady = 10)
-        
+        self.botao8.bind("<Button-1>", self.Todos)
         
         self.janela.mainloop()
 
@@ -132,6 +140,9 @@ class Aplicacao:
     def escreveVetor(self,x):
         tamanho  = []
         number = int (self.Entrada.get())
+        self.TamanhoVetor["text"] = number
+        
+
         tamanho.append(number)
 
         vetor = []
@@ -145,73 +156,163 @@ class Aplicacao:
 
         
         vetWrite.writerow(vetor)
-        
+
+        #INVOCAR O EXERCUTAVEL DO C PARA RODAR OS DADOS
+        os.system("testa.exe")
+   
 
 
+    #FUNÇÃO QUE PLOTA GRÁFICO EM RELAÇÃO A NÚMERO DE COMPARAÇÕES (0) OU RELAÇÃO A NÚMERO DE TROCAS (1)
     def plota_grafico(self, event):
-        labels = []
-
-        for chave in self.__dados:
-            if self.__dados[chave][1] == True:
-                labels.append(chave)
-
-
-        recebe = open("Exemplo.csv")
-        dados = csv.reader(recebe,delimiter=';') #DELIMITER É COMO OS CAMPOS ESTÃO DIVIDIDOS (PODENDO SER , E ;)
-
-        dadosRecebidos = []
-        for i in dados:
-            for n in i:
-                dadosRecebidos.append(int(n)) ###PROBLEMA A SER SOLUCIONADO
-        #print(dadosRecebidos)
         
-        contador = 0
         
-        for k in self.__dados:
-            self.__dados[k][0] = dadosRecebidos[contador]
-            contador += 1
-        
-        #print(labels)
-        dadosPlotados = []
+        for t in self.__grafico:
 
-        for j in self.__dados:
-            if self.__dados[j][1] == True:
-                dadosPlotados.append(self.__dados[j][0])
+            if self.__grafico[t] == True:
+
+                if t == "comparação":
+
+                    labels = []
+
+                    for chave in self.__dados:
+                        if self.__dados[chave][1] == True:
+                            labels.append(chave)
+
+                    recebe = open("dadosComparacao.csv")
+                    dados = csv.reader(recebe,delimiter=';') #DELIMITER É COMO OS CAMPOS ESTÃO DIVIDIDOS (PODENDO SER , E ;)
+
+                    dadosRecebidos = []
+                    for i in dados:
+                        for n in i:
+                            dadosRecebidos.append(int(n)) ###PROBLEMA A SER SOLUCIONADO
+            
+                    #print(dadosRecebidos)
+        
+                    contador = 0
+        
+                    for k in self.__dados:
+                        self.__dados[k][0] = dadosRecebidos[contador]
+                        contador += 1
+        
+                    #print(labels)
+                    dadosPlotados = []
+
+                    for j in self.__dados:
+                        if self.__dados[j][1] == True:
+                            dadosPlotados.append(self.__dados[j][0])
             
                 
        
-        #print(self.__dados)
-        #print(dadosPlotados)
-        pt.figure(figsize=(8,4))
-        pt.bar(labels,dadosPlotados, color = "green",width=0.6, align="center")
-        pt.xticks(labels)
-        pt.xlabel("Algoritmos de Ordenação")
-        pt.ylabel("Passos computacionais")
-        pt.grid(True)
-        pt.savefig("barra.jpg")
-        self.criaLabel()
-        self.mostraPiorAlgoritmo()
-        self.reiniciaAlgoritmosSelecionado()
-       
-    def criaLabel(self):
-        image = Image.open("barra.jpg")
-        image2 = image.resize((600,300))
-        photo = ImageTk.PhotoImage(image2)
-        self.label = Label(self.Frame3, text = "adicionando", image = photo)
-        self.label.image = photo
-        self.label.place(x = 0, y = 0)
+                    #print(self.__dados)
+                    #print(dadosPlotados)
+                    pt.figure(figsize=(8,4))
+                    pt.bar(labels,dadosPlotados, color = "green",width=0.6, align="center")
+                    pt.xticks(labels)
+                    pt.xlabel("Algoritmos de Ordenação")
+                    pt.ylabel("Passos computacionais")
+                    pt.grid(True)
+                    pt.savefig("barra.jpg")
+                    self.criaLabelComp()
+                    self.mostraPiorAlgoritmo()
+                    self.mostraMelhorAlgoritmo()
+                    self.reiniciaAlgoritmosSelecionado()
+                    
+        
+                elif t == "trocas":
+                    
+                    labels = []
 
+                    for chave in self.__dados:
+                        if self.__dados[chave][1] == True:
+                            labels.append(chave)
+
+                    recebe = open("dadosTrocas.csv")
+                    dados = csv.reader(recebe,delimiter=';') #DELIMITER É COMO OS CAMPOS ESTÃO DIVIDIDOS (PODENDO SER , E ;)
+
+                    dadosRecebidos = []
+                    for i in dados:
+                        for n in i:
+                            dadosRecebidos.append(int(n)) ###PROBLEMA A SER SOLUCIONADO
+            
+                    #print(dadosRecebidos)
+        
+                    contador = 0
+        
+                    for k in self.__dados:
+                        self.__dados[k][0] = dadosRecebidos[contador]
+                        contador += 1
+        
+                    #print(labels)
+                    dadosPlotados = []
+
+                    for j in self.__dados:
+                        if self.__dados[j][1] == True:
+                            dadosPlotados.append(self.__dados[j][0])
+            
+                
+       
+                    #print(self.__dados)
+                    #print(dadosPlotados)
+                    pt.figure(figsize=(8,4))
+                    pt.bar(labels,dadosPlotados, color = "green",width=0.6, align="center")
+                    pt.xticks(labels)
+                    pt.xlabel("Algoritmos de Ordenação")
+                    pt.ylabel("Passos computacionais")
+                    pt.grid(True)
+                    pt.savefig("barra2.jpg")
+                    self.criaLabelComp()
+                    self.mostraPiorAlgoritmo()
+                    self.mostraMelhorAlgoritmo()
+                    self.reiniciaAlgoritmosSelecionado()
+
+                else:
+                    pass
+
+
+
+    def criaLabelComp(self):
+        
+        for t in self.__grafico:
+            
+            if self.__grafico[t] == True:
+
+                if t == "comparação":
+
+                    image = Image.open("barra.jpg")
+                    image2 = image.resize((600,300))
+                    photo = ImageTk.PhotoImage(image2)
+                    self.label = Label(self.Frame3, text = "adicionando", image = photo)
+                    self.label.image = photo
+                    self.label.place(x = 0, y = 0)
+
+                elif t == "trocas":
+
+                    image = Image.open("barra2.jpg")
+                    image2 = image.resize((600,300))
+                    photo = ImageTk.PhotoImage(image2)
+                    self.label = Label(self.Frame3, text = "adicionando", image = photo)
+                    self.label.image = photo
+                    self.label.place(x = 0, y = 0)
+                else:
+                    pass
+
+
+        
 
     ## ------------------------------ Funções informativas ------------------------
 
     def numComp(self, event):
 
-        self.CompOuTroca = 0
+        self.__grafico["comparação"] = True
+        self.__grafico["trocas"] = False
+
         self.labelCompInforma()
     
     def numTroca(self, event):
+        
+        self.__grafico["comparação"] = False
+        self.__grafico["trocas"] = True
 
-        self.CompOuTroca = 1
         self.labelCompInforma()
     
     #----------------------- Funções que muda os valores no dicionario --------------------
@@ -244,6 +345,13 @@ class Aplicacao:
         self.__dados["StoogeSort"][1] = True
         self.alteraAlgoritmosSelecionado()
 
+    def Todos(self,event):
+        
+        for i in self.__dados:
+            self.__dados[i][1] = True
+
+        self.InformaAlg["text"] = "Todos"
+
     #----------------------------------------------------------------------------------------------------
     
     def alteraAlgoritmosSelecionado(self):
@@ -270,27 +378,43 @@ class Aplicacao:
 
     def reiniciaAlgoritmosSelecionado(self): 
 
+        for t in self.__grafico:
+            self.__grafico[t] = False
 
         for chave in self.__dados:
             self.__dados[chave][1] = False
-
-        self.LabelConcluAlgoritmosPlotados["text"] = self.__StringAlg
-        self.InformaAlg["text"] = "...."
         
+        String = ""
+        for i in self.__StringAlg:
+            String += i +", "
+
+        if self.InformaAlg["text"] == "Todos":
+            self.LabelConcluAlgoritmosPlotados["text"] = "Todos"
+        else:
+            self.LabelConcluAlgoritmosPlotados["text"] = String
+
+       
+        self.InformaAlg["text"] = "...."
+        self.LabelCompInfor["text"] = "..."
         self.__StringAlg = []
         
 
     
     def labelCompInforma(self):
 
-        if self.CompOuTroca == 0:
-            self.LabelCompInfor["text"] = "Nº de comparações"
-
-        elif self.CompOuTroca == 1:
-            self.LabelCompInfor["text"] = "Nº de trocas"
-
-        else:
-            pass
+       for t in self.__grafico:
+           if self.__grafico[t] == True:
+                
+                if t == "comparação":
+                   
+                   self.LabelCompInfor["text"] = "Nº de comparações"
+                
+                elif t == "trocas":
+                    
+                    self.LabelCompInfor["text"] = "Nº de trocas"
+                
+                else:
+                    pass
 
     def mostraPiorAlgoritmo(self):
         pior = [0,""]
@@ -302,6 +426,25 @@ class Aplicacao:
                     pior[0] = self.__dados[k][0]
                     
         self.LabelPiorAlgoritmo["text"] = pior[1] + " >> Pior Algoritmo"
+
+    def mostraMelhorAlgoritmo(self):
+        
+        melhor = [0,""]
+
+        for k in self.__dados:
+
+            if melhor[0] == 0:
+                melhor[0] = self.__dados[k][0]
+                melhor[1] = k
+                continue
+            
+            if self.__dados[k][0] < melhor[0]:
+                melhor[0] = self.__dados[k][0]
+                melhor[1] = k
+        
+
+        self.MelhorAlgoritmo["text"] = melhor[1] + ">> Melhor Algoritmo"
+
 
 janela = Tk()   
 janela.geometry("800x590+300+80")

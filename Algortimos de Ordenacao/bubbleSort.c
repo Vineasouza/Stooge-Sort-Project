@@ -17,6 +17,8 @@ void swap(int *xp, int *yp) {
  * pode-se notar que ele nao percorre a parte que ja esta ordenada do vetor
  * Tudo isso ajuda a diminuir os passos computacionais do algortimo
  */
+
+
 void bubbleSort(int arr[], int n) { 
     int i, k, flag;
 

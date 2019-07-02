@@ -35,6 +35,7 @@ int partition (int* A, int low, int high, int *numComp, int *numTroca) {
         }
     }
 
+    *numTroca = *numTroca + 1;
     swap(&A[i+1], &A[high]);
     return (i+1);
 }
@@ -42,28 +43,19 @@ int partition (int* A, int low, int high, int *numComp, int *numTroca) {
 /*funcao que implementa o quickSort, sendo low
 o index inicial e high o index final*/
 
-int quickSort(int* A, int low, int high, int *numComp, int* numTroca,int condicao) {
+void quickSort(int* A, int low, int high, int *numComp, int* numTroca) {
     
     if(low < high) {
 
         /*pi e a particao do index, A[p] e agora
         o lugar certo*/
+        *numComp= *numComp + 1;
         int pi = partition(A, low, high, numComp, numTroca);
         /*separadamente sort os elementos antes de
         particionar e depois de particionar*/
-        quickSort(A, low, pi-1,numComp,numTroca,condicao);
-        quickSort(A, pi+1, high,numComp,numTroca,condicao);
+        quickSort(A, low, pi-1,numComp,numTroca);
+        quickSort(A, pi+1, high,numComp,numTroca);
     }
-    
-    //DEFININDO ATRÁVES DA CONDICAO PASSADA COM O RETORNO
-    if(condicao == 0){
-        int retorTotalComp = *numComp;
-        return retorTotalComp;
-    }else{
-        int retornoTotalTroca = *numTroca;
-        return retornoTotalTroca;
-    }
- 
 }
 
 //---------------------------------------------------------------------
@@ -94,6 +86,7 @@ void merge(int *arr, int l, int m, int r, int* numComp, int* numTroca) {
     k = l; /*index inicial do array merged*/
 
     while (i < n1 && j < n2) {
+        
         *numComp = *numComp + 1;
 
         if (L[i] <= R[j]) {
@@ -128,34 +121,27 @@ void merge(int *arr, int l, int m, int r, int* numComp, int* numTroca) {
 
 /*L e para o index da esquerda e r para o index da direita do
 subarray de A que vai ser sorted*/
-int mergeSort(int *arr, int l, int r, int* numComp, int* numTroca, int condicao)
+void mergeSort(int *arr, int l, int r, int* numComp, int* numTroca)
 {
     if (l < r) {
         /* O mesmo que (l+r)/2, mas evita overflow de l grande e h*/
         int m = l+(r-l)/2;
 
         /*Sort primeira e segunda metade */
-        mergeSort(arr, l, m, numComp, numTroca, condicao);
-        mergeSort(arr, m+1, r, numComp, numTroca, condicao);
+        mergeSort(arr, l, m, numComp, numTroca);
+        mergeSort(arr, m+1, r, numComp, numTroca);
 
        merge(arr, l, m, r, numComp, numTroca);
-    }
-
-    //DEFININDO RETORNO
-    if(condicao == 0){
-        return (*numComp);
-    }else{
-        return (*numTroca);
     }
 
 }
 
 //-------------------- ShellSort -----------
 
-int shellSort(int* A, int n, int condicao) {
+void shellSort(int* A, int n, int *numComp, int*numTrocas) {
     int h = 1, i = 0, j = 0, chave = 0, k = 1;
-    int numeroCom = 0;
-    int numeroTroca = 0;
+    
+    
     do{
         h = (h*3) + 1;
     } while(h < n);
@@ -167,82 +153,85 @@ int shellSort(int* A, int n, int condicao) {
             chave = A[i];
             j = i - h;
 
-            numeroCom++;
+            *numComp = *numComp + 1;
             while(j >= 0 && chave < A[j]) {
-                numeroTroca++;
+                *numTrocas = *numTrocas + 1;
                 A[j + h] = A[j];
                 j = j - h;
             }
 
-            numeroTroca++;
+            *numTrocas = *numTrocas + 1;
             A[j + h] = chave;
         }
     } while (h > 1);
 
-    if(condicao == 0){
-        return numeroCom;
-    }else{
-        return numeroTroca;
-    }
-  
+
 }
 
 //--------------------------------------------------------------
 
 //-------------- Bubble Sort ---------------------------------
-int bubbleSort(int *vetor, int tamanho, int condicao) {
-    int i, j, numeroCom = 0, numeroTroca = 0;
-    for (i = 0; i < (tamanho - 1); i++)
-        for (j = 0; j < (tamanho - (i + 1)); j++)
-            numeroCom++;
-            if (vetor[j] > vetor[j + 1])
-                numeroTroca++;
-                trocar(&vetor[j], &vetor[j + 1]);
-    
-    if(condicao == 0){
-        return numeroCom;
-    }else{
-        return numeroTroca;
+
+
+/**
+ * Implementacao do algoritmo de ordenacao Bubble Sort
+ * Este algoritmo trabalha com a ideia de passagens, ou passes, 
+ * que eh simplemente o que ocorre quando escaneamos um vetor da esq para dir
+ * Para cada 1 pass, o algortimo empurra para a direita o maior elemento do vetor
+ * Este algoritmo foi otimizado atraves de uma variavel flag e, para cada pass,
+ * pode-se notar que ele nao percorre a parte que ja esta ordenada do vetor
+ * Tudo isso ajuda a diminuir os passos computacionais do algortimo
+ */
+
+
+
+
+void bubbleSort(int *arr, int n, int*numCom, int*numTroca) { 
+    int i, k, flag;
+
+    // garante que serao feitas n passagens (n passes) e o vetor sera ordenado corretamente
+    for (k = 0; k < n; k++) {
+        flag = 0;
+        // faz uma passagem (1 pass) pelo subvetor
+        // vai de 0 ate n-k-1 pois assim garantimos que ele nao ira perder tempo com a parte do vetor que ja esta ordenado 
+        for (i = 0; i < n-k-1; i++) {
+            *numCom = *numCom + 1;  
+            if (arr[i] > arr[i+1]) {
+                *numTroca = *numTroca + 1;
+                swap(&arr[i], &arr[i+1]);
+                flag = 1;
+            }
+        }
+
+        // A fim de otimizar ainda mais o codigo, add uma variavel flag,
+        // se ao final de 1 pass, ou 1 passagem ele ainda valer 0, eh porque
+        // ao fazer o pass, nao foi feita nenhuma TROCA, se nao foi feita nenhuma troca,
+        // quer dizer que nao eh necessario mais fazer mais loops (ou passagens)
+        if (flag == 0) break;
     }
-
-}
-
-/* Funcao auxiliar do Bubble Sort */
-void trocar(int *x, int *y) {
-    int temp;
-    
-    temp = *x;
-    *x = *y;
-    *y = temp;
-}
-
+} 
 //------------------------------------------------------------------------
 
 //--------------------- Insertion Sort --------------------------------------
 
-
-int insertionSort(int *vetor, int tamanho, int condicao) {
-    int i, j, k, numeComp = 0, numeroTroca = 0;
+void insertionSort(int *vetor, int tamanho, int* numComp, int* numTrocas) {
+    int i, j, k;
     
     for (i = 1; i < tamanho; ++i) {
         k = vetor[i];
         j = i - 1;
         
-        numeComp++;
+        *numComp = *numComp  + 1;
         while ((j >= 0) && (k < vetor[j])) {
-            numeroTroca++;
+            *numTrocas = *numTrocas + 1;
             vetor[j + 1] = vetor[j];
             --j;
         }
-        numeroTroca++;
+        *numTrocas = *numTrocas + 1;
         vetor[j + 1] = k;
     }
 
-    if(condicao == 0){
-        return numeComp;
-    }else{
-        return numeroTroca;
-    }
+  
 }
 
 //---------------------------------------------------------
@@ -250,43 +239,50 @@ int insertionSort(int *vetor, int tamanho, int condicao) {
 
 
 //---------------- SelectionSort -------------------------------
+/**
+ * Funcao auxiliar da funcao principal utilizada 
+ * para trocar dois valores entre si
+ */
+void trocando(int *xp, int *yp) {
+    int temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
 
-int selectionSort(int *vetor, int tamanho, int condicao) {
-    int i, j, min;
-    int numComp = 0;
-    int numeroTroca = 0;
-    for (i = 0; i < tamanho - 1; i++) {
-        min = i;
-        for (j = i + 1; j < tamanho; j++)
-            numComp++;
-            if (vetor[j] < vetor[min])
-                min = j;
+/**
+ * O algoritmo Selection Sort baseia-se na ideia
+ * de encontrar o menor elemento do array e coloca-lo na primeira posicao,
+ * depois na segunda, terceira, etc. Tambem se trabalha a ideia de sub-array,
+ * onde e criado um sub-array para cada iteracao do loop interno, em que se busca
+ * encontrar o menor elemento do sub-array */ 
+void selectionSort(int *arr, int n, int *numComp, int*numTrocas) { 
+    int i, j, min_idx; 
 
-        numeroTroca++;
-        trocar(&vetor[i], &vetor[min]);
-    }
+    // Mover um por um o limite do sub-array desordenado
+    for (i = 0; i < n-1; i++) { 
+        // Encontrar o menor elemento do array desordenado
+        min_idx = i; 
+        for (j = i+1; j < n; j++) 
+          *numComp= *numComp + 1;  
+          if (arr[j] < arr[min_idx]) 
+            *numTrocas = *numTrocas + 1;
+            min_idx = j; 
+  
+        // Trocar o menor elemento encontrado pelo primeiro elemento 
+        trocando(&arr[min_idx], &arr[i]); 
+    } 
+} 
 
-    if(condicao == 0){
-        return numComp;
-    }else{
-        return numeroTroca;
-    }
-    
-}
 
 //------------------------------------------------------------------------
 
 //------------------- StoogeSort----------------------------------------
 
-int stoogeSort(int *A, int l, int h, int *numComp, int* numTroca, int condicao) {
+void stoogeSort(int *A, int l, int h, int *numComp, int* numTroca) {
     /*Se a posicao inicial(l) for maior
     ou igual a posicao final(h)*/
     if (l >= h) {
-        if(condicao == 0){
-            return (*numComp);
-        }else{
-            return(*numTroca);
-        }
+        return;
     }
 
     /*Se o primeiro elemento e menor
@@ -294,6 +290,7 @@ int stoogeSort(int *A, int l, int h, int *numComp, int* numTroca, int condicao) 
     *numComp = *numComp + 1;
     
     if(A[l] > A[h]) {
+        
         *numTroca = *numTroca + 1;
         int temp = A[l];
         A[l] = A[h];
@@ -307,15 +304,15 @@ int stoogeSort(int *A, int l, int h, int *numComp, int* numTroca, int condicao) 
 
         /*recursivamente, sort os primeiros
         2/3 elementos*/
-        stoogeSort(A, l, h - temp,numComp,numTroca,condicao);
+        stoogeSort(A, l, h - temp,numComp,numTroca);
 
         /*recursivamente, sort os ultimos
         2/3 elementos*/
-        stoogeSort(A, l + temp, h,numComp,numTroca,condicao);
+        stoogeSort(A, l + temp, h,numComp,numTroca);
 
         /*recursivamente, sort os primeiros
         2/3 elementos novamente para confirmar*/
-        stoogeSort(A, l, h - temp,numComp,numTroca,condicao);
+        stoogeSort(A, l, h - temp,numComp,numTroca);
     }
 }
 

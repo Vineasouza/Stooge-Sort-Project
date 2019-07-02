@@ -5,21 +5,21 @@
 //QUICKSORT
 void swap(int*, int*);
 int partition(int*, int, int, int*, int*);
-int quickSort(int* A, int low, int high, int *numComp, int*numTroca, int condicao);
+void quickSort(int* A, int low, int high, int *numComp, int*numTroca);
 //mergeSort
 void merge(int *arr, int l, int m, int r, int *numComp, int*numTroca);
-int mergeSort(int *arr, int l, int r, int*numComp, int*numTroca, int condicao);
+void mergeSort(int *arr, int l, int r, int*numComp, int*numTroca);
 //ShellSort
-int shellSort(int* A, int n, int condicao);
+void shellSort(int* A, int n, int *numComp, int*numTrocas);
 //BubleSort
-int bubbleSort(int *vetor, int tamanho,int codicao);
-void trocar(int *x, int *y);
+void bubbleSort(int *arr, int n,int*numCom, int*numTroca);
 //INSERTION SORT
-int insertionSort(int *vetor, int tamanho, int condicao);
+void insertionSort(int *vetor, int tamanho, int* numComp, int* numTrocas);
 //SELECTIONSORT
-int selectionSort(int *vetor, int tamanho, int condicao);
+void trocando(int *xp, int *yp);
+void selectionSort(int *arr, int n, int *numComp, int*numTrocas);
 //StoogeSort
-int stoogeSort(int *A, int l, int h, int *numComp, int *numTroca, int condicao);
+void stoogeSort(int *A, int l, int h, int *numComp, int *numTroca);
 //------------------------------------------------------
 
 #endif
