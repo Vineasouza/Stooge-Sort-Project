@@ -3,8 +3,9 @@ import csv
 import matplotlib.pyplot as pt
 from PIL import Image, ImageTk
 import random 
-import os
 import subprocess
+import time
+import os
 class Aplicacao:
     
     __janela = None
@@ -17,7 +18,7 @@ class Aplicacao:
     }
 
     __StringAlg = []
-
+    __StringAuxiliar = []
     def __init__(self, tk):
         self.janela = tk
         self.Frame1 = Frame(janela,height = 330, width = 200, background = "#1e8bc3");
@@ -27,6 +28,7 @@ class Aplicacao:
         self.Frame2.place(x = 110, y = 10);
 
         self.FramaInforma = Frame(self.Frame2, height = 90 , width = 600, background = "#1e8bc3")
+        self.FramaInforma.pack(padx = 10)
         self.FramaInforma.place(x = 275,  y= 5)
         
         self.LabelVetor = Label(self.FramaInforma,text = "Tamanho do vetor :", fg = "White", bg = "#1e8bc3" )
@@ -46,6 +48,9 @@ class Aplicacao:
         
         self.InformaAlg = Label(self.FramaInforma,  fg = "White", text ="...", bg = "#1e8bc3")
         self.InformaAlg.place(x=150,y=55)
+
+        self.InformaAlg2 = Label(self.FramaInforma, fg = "White", text = "...", bg = "#1e8bc3")
+        self.InformaAlg2.place( x = 10, y = 75)
 
         self.Frame3 = Frame(janela, height = 300, width = 600, background ="#1e8bc3");
         self.Frame3.place(x= 110, y = 115);
@@ -157,15 +162,21 @@ class Aplicacao:
         
         vetWrite.writerow(vetor)
 
-        #INVOCAR O EXERCUTAVEL DO C PARA RODAR OS DADOS
-        os.system("testa.exe")
-   
+        
+        
+        comando = "gcc algoritmos_ordenacao.c programa.c -o programa.exe"
+        os.system(comando)
 
+
+     
 
     #FUNÇÃO QUE PLOTA GRÁFICO EM RELAÇÃO A NÚMERO DE COMPARAÇÕES (0) OU RELAÇÃO A NÚMERO DE TROCAS (1)
     def plota_grafico(self, event):
         
-        
+
+        os.system("programa.exe")
+        time.sleep(2)
+
         for t in self.__grafico:
 
             if self.__grafico[t] == True:
@@ -356,7 +367,10 @@ class Aplicacao:
     
     def alteraAlgoritmosSelecionado(self):
         
+        #NOME DA VARÁIVEL ESTÁ COM STRING, MAIS É UMA LISTA PARA FACILITAR AS OPERAÇÕES
+        #LISTA USADO CASO SEJA SELECIONADO MAIS QUE DOIS ALGORITMOS
         
+
         for chave in self.__dados:
             
             if self.__dados[chave][1] == True:
@@ -366,14 +380,28 @@ class Aplicacao:
 
                     if(k == chave):
                         self.__StringAlg.remove(k)
-                #--------------------------------    
+                #--------------------------------
+                
+                #LISTA AUXILIAR PARA NÃO POLUIR O FRAMA NA HORA DA APRESENTAÇÃO
+                if len(self.__StringAlg) > 1:
+
+                    for i in self.__StringAuxiliar:
+                        if(i == chave):
+                           self.__StringAuxiliar.remove(i)
+                    
+                    self.__StringAuxiliar.append(chave)
+                    continue
+
                 self.__StringAlg.append(chave)
-
-
+        
+      
            
 
         self.InformaAlg["text"] = self.__StringAlg
 
+        #CASO TEVE A NECESSIDA DE TER A STRING AUXILIAR
+        if len(self.__StringAuxiliar) != 0:
+            self.InformaAlg2["text"] = self.__StringAuxiliar
        
 
     def reiniciaAlgoritmosSelecionado(self): 
@@ -384,9 +412,17 @@ class Aplicacao:
         for chave in self.__dados:
             self.__dados[chave][1] = False
         
+        #PEGANDO OS ALGORITMOS UTILIZADOS
         String = ""
         for i in self.__StringAlg:
             String += i +", "
+        
+        #CASO TENHA USADO STRING AUXILIARR
+        if len(self.__StringAuxiliar) != 0:
+            for i in self.__StringAuxiliar:
+                String += i + ","
+
+        #----------------------------------
 
         if self.InformaAlg["text"] == "Todos":
             self.LabelConcluAlgoritmosPlotados["text"] = "Todos"
@@ -396,10 +432,11 @@ class Aplicacao:
        
         self.InformaAlg["text"] = "...."
         self.LabelCompInfor["text"] = "..."
+        self.InformaAlg2["text"] = "..."
         self.__StringAlg = []
-        
+        self.__StringAuxiliar = []
 
-    
+    #INFORMA QUAL FOI O TIPO DE ANÁLISE SELECIONADA
     def labelCompInforma(self):
 
        for t in self.__grafico:
@@ -417,19 +454,32 @@ class Aplicacao:
                     pass
 
     def mostraPiorAlgoritmo(self):
-        pior = [0,""]
+        #Primeiro parâmetro da lista recebe os dados, segundo o nome do algoritmo, e o terceiro se é em relação ao nuúmero de comparações ou trocas
+        pior = [0,"",""]
 
+        #VENDO SE É NUMERO DE COMPARAÇÃO OU TROCA A ANÁLISE
+        for t in self.__grafico:
+            if self.__grafico[t] == True:
+                pior[2] = t
+
+        #VENDO DE ACORDO COM DADOS DOS ALGORITMOS SELECIONANDO QUAL É O PIOR
         for k in self.__dados:
             if self.__dados[k][1] == True:
                 if self.__dados[k][0] > pior[0]:
                     pior[1] = k
                     pior[0] = self.__dados[k][0]
                     
-        self.LabelPiorAlgoritmo["text"] = pior[1] + " >> Pior Algoritmo"
+        self.LabelPiorAlgoritmo["text"] = pior[1] + " >> Pior Algoritmo com |" + str(pior[0]) + "| números de " + pior[2]  
+    #MESMO CASO DA FUNÇÃO DE CIMA, MAS PARA O MELHOR ALGORITMO
 
     def mostraMelhorAlgoritmo(self):
         
-        melhor = [0,""]
+        melhor = [0,"",""]
+
+        for t in self.__grafico:
+            if self.__grafico[t] == True:
+                melhor[2] = t
+
 
         for k in self.__dados:
 
@@ -443,7 +493,7 @@ class Aplicacao:
                 melhor[1] = k
         
 
-        self.MelhorAlgoritmo["text"] = melhor[1] + ">> Melhor Algoritmo"
+        self.MelhorAlgoritmo["text"] = melhor[1] + ">> Melhor Algoritmo com |" + str(melhor[0]) +"| números de " + melhor[2]
 
 
 janela = Tk()   

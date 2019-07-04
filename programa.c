@@ -4,18 +4,22 @@
 
 int main(int argc, char const *argv[]) {
 
-    int vetor[] = {10,3,5,9,7};
-    int n = 5;
-    int dados;
     
+    //PONTEIRO PARA ARQUIVOS 
     FILE *arquivo_dados;
     FILE *arquivoVetor;
     FILE *arquivo_trocas;
 
+    /*PARAMETRO PASSADOS AS FUNÇÕES PARA RECEBER O NÚMERO 
+      DE COMPARAÇÃO DO ALGORITMOS DE ORDENAÇÃO
+    */
     int numeroComparacao = 0;
     int *pontNumComp;
     pontNumComp = &numeroComparacao;
 
+     /*PARAMETRO PASSADOS AS FUNÇÕES PARA RECEBER O NÚMERO 
+      DE TROCAS DO ALGORITMOS DE ORDENAÇÃO
+    */
     int numeroDeTrocas = 0;
     int *pontNumTroca;
     pontNumTroca = &numeroDeTrocas;
@@ -31,7 +35,7 @@ int main(int argc, char const *argv[]) {
     int quantidade = 0;
     int inteiro = 0;
     
-    arquivoVetor = fopen("vetor.csv", "r");
+    arquivoVetor = fopen("vetor.csv", "r");//ARQUIVO ONDE ESTÁ O VETOR DESORDENADO
 
     while (!feof(arquivoVetor))
     {
@@ -96,15 +100,15 @@ int main(int argc, char const *argv[]) {
     fprintf(arquivo_dados,"%d;", numeroComparacao);
     fprintf(arquivo_trocas,"%d;", numeroDeTrocas);
 
-    printf("Números de comparações >>> %d \n", numeroComparacao);
-    printf("Números de trocas >> %d \n", numeroDeTrocas);
+    //printf("Números de comparações >>> %d \n", numeroComparacao);
+    //printf("Números de trocas >> %d \n", numeroDeTrocas);
 
     //TESTANDO PARA VER SE ORDENOU
-    for(int i = 0; i< quantidade; i++){
-        printf("|%d|, ",vet[i]);
-    }
+    //for(int i = 0; i< quantidade; i++){
+        //printf("|%d|, ",vet[i]);
+    
 
-    //ERRO NÃO ESTÁ ORDENANDO
+    //ESTÁ ORDENANDO
 
 
 //------------------------------------------------------------
@@ -297,8 +301,10 @@ arquivoVetor = fopen("vetor.csv", "r");
     //stooge ta rodando
 //----------------------------------------------------------------------
 
+    //FECHANDO ARQUIVO ONDE CONTEM OS DADOS
     fclose(arquivo_dados);
-    
+    fclose(arquivo_trocas);
+
     //Desalocando memória
     free(vet);
 
